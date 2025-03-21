@@ -76,3 +76,73 @@ having count(e.employee_id) >= 4;
 -- 7a
 -- nie mozna dodac danych do funkcji agregujacych
 
+-- 8
+create view v_wysokie_pensje as
+select * 
+from employees
+where salary > 12000
+with check option;
+
+-- 8a_1
+-- nie da sie
+insert into v_wysokie_pensje (
+    employee_id,
+    first_name,
+    last_name,
+    email,
+    hire_date,
+    job_id,
+    salary
+)
+values (
+    207, 
+    'Jan', 
+    'Nowak', 
+    'jan.nowak@example.com',
+    '2025-03-18', 
+    'IT_PROG',
+    8000
+);
+
+-- 8a_2
+-- da sie
+insert into v_wysokie_pensje (
+    employee_id,
+    first_name,
+    last_name,
+    email,
+    hire_date,
+    job_id,
+    salary
+)
+values (
+    207, 
+    'Jan', 
+    'Nowak', 
+    'jan.nowak@example.com',
+    '2025-03-18', 
+    'IT_PROG',
+    12500
+);
+
+-- 9
+create materialized view v_managerowie as
+select
+    m.first_name,
+    m.last_name,
+    m.salary,
+    d.department_name
+from employees m
+join departments d on m.department_id = d.department_id
+where m.employee_id in (
+    select distinct manager_id 
+    from employees 
+    where manager_id is not null 
+);
+
+-- 10
+create view v_najlepiej_oplacani as
+select *
+from employees
+order by salary desc
+fetch first 10 rows only;
