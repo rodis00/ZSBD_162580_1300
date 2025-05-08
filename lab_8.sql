@@ -87,6 +87,27 @@ END;
 /
 
 
+-- 4
+CREATE OR REPLACE TRIGGER trg_block_job_grades
+BEFORE INSERT OR UPDATE OR DELETE ON JOB_GRADES
+FOR EACH ROW
+BEGIN
+    RAISE_APPLICATION_ERROR(-20002, 'Operacje INSERT, UPDATE i DELETE na tabeli JOB_GRADES są zabronione.');
+END;
+/
+
+-- 5
+CREATE OR REPLACE TRIGGER trg_ignore_salary_change
+BEFORE UPDATE ON jobs
+FOR EACH ROW
+BEGIN
+    :NEW.min_salary := :OLD.min_salary;
+    :NEW.max_salary := :OLD.max_salary;
+END;
+/
+
+
+
 
 
 
